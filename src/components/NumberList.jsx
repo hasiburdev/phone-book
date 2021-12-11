@@ -18,7 +18,7 @@ const NumberList = ({ userId }) => {
       }
       console.log(phoneNumbers);
     });
-  }, []);
+  }, [userId, phoneNumbers]);
 
   return (
     <div

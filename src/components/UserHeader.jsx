@@ -12,7 +12,7 @@ const UserHeader = ({ userId }) => {
       console.log(snapshot.val());
       setUserData(() => snapshot.val());
     });
-  }, []);
+  }, [userId]);
 
   const handleSignOut = () => {
     signOut(auth)
