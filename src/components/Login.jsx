@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Container, Segment, Form, Button, Message } from "semantic-ui-react";
+import {
+  Container,
+  Segment,
+  Form,
+  Button,
+  Message,
+  Menu,
+} from "semantic-ui-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { auth } from "../firebase.config";
@@ -10,6 +17,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const isFormValid = (email, password) => {
     if (!email.length || !password.length) {
@@ -26,9 +34,11 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isFormValid(email, password)) {
+      setIsLoading(true);
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredentials) => {
           setSuccessMessage("Login Successful!");
+          setIsLoading(false);
           setTimeout(() => {
             window.location = "/";
           }, 1500);
@@ -45,13 +55,32 @@ const Login = () => {
               setErrorMessage("");
             }, 2000);
           }
+          setIsLoading(false);
         });
     }
   };
 
   return (
-    <Container style={{ marginTop: "50px" }}>
-      <Segment style={{ maxWidth: "500px", margin: "0 auto", padding: "40px" }}>
+    <Container style={{}}>
+      <Menu>
+        <Menu.Item name="title">Phone Book</Menu.Item>
+
+        <Menu.Item position="right" name="login">
+          <Link to="/login">Login</Link>
+        </Menu.Item>
+        <Menu.Item position="" name="register">
+          <Link to="/register">Register</Link>
+        </Menu.Item>
+      </Menu>
+
+      <Segment
+        style={{
+          maxWidth: "500px",
+          margin: "0 auto",
+          padding: "40px",
+          marginTop: "20px",
+        }}
+      >
         {errorMessage ? <Message color="red">{errorMessage}</Message> : ""}
         {successMessage ? (
           <Message color="green">{successMessage}</Message>
@@ -78,7 +107,15 @@ const Login = () => {
             />
           </Form.Field>
 
-          <Button type="submit">Login</Button>
+          {isLoading ? (
+            <Button fluid loading>
+              Loading
+            </Button>
+          ) : (
+            <Button fluid type="submit">
+              Login
+            </Button>
+          )}
         </Form>
       </Segment>
       <Segment

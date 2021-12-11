@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Form, Button, Container, Segment, Message } from "semantic-ui-react";
+import {
+  Form,
+  Button,
+  Container,
+  Segment,
+  Message,
+  Menu,
+} from "semantic-ui-react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Link } from "react-router-dom";
 
@@ -15,6 +22,7 @@ export default class Register extends Component {
     errorMessage: "",
     successMessage: "",
     email: "",
+    isLoading: false,
   };
 
   isValidForm = ({ name, phone, password, confirmPassword, email }) => {
@@ -70,6 +78,7 @@ export default class Register extends Component {
     console.log(validate);
 
     if (this.isValidForm(this.state)) {
+      this.setState({ isLoading: true });
       createUserWithEmailAndPassword(
         auth,
         this.state.email,
@@ -81,6 +90,7 @@ export default class Register extends Component {
           this.setState({
             successMessage: "Account Created Successfully!",
           });
+          this.setState({ isLoading: false });
           setTimeout(() => {
             window.location = "/";
           }, 1500);
@@ -102,8 +112,7 @@ export default class Register extends Component {
               this.setState({ errorMessage: "" });
             }, 2000);
           }
-
-          console.log(error);
+          this.setState({ isLoading: false });
         });
     }
   };
@@ -114,11 +123,27 @@ export default class Register extends Component {
   };
 
   render() {
-    const { errorMessage, successMessage } = this.state;
+    const { errorMessage, successMessage, isLoading } = this.state;
     return (
-      <Container style={{ marginTop: "50px" }}>
+      <Container style={{ maxWidth: "70%" }}>
+        <Menu>
+          <Menu.Item name="title">Phone Book</Menu.Item>
+
+          <Menu.Item position="right" name="login">
+            <Link to="/login">Login</Link>
+          </Menu.Item>
+          <Menu.Item position="" name="register">
+            <Link to="/register">Register</Link>
+          </Menu.Item>
+        </Menu>
+
         <Segment
-          style={{ maxWidth: "500px", margin: "0 auto", padding: "40px" }}
+          style={{
+            maxWidth: "500px",
+            margin: "0 auto",
+            padding: "40px",
+            marginTop: "20px",
+          }}
         >
           {errorMessage ? <Message color="red">{errorMessage}</Message> : ""}
           {successMessage ? (
@@ -172,7 +197,15 @@ export default class Register extends Component {
                 onChange={this.handleChange}
               />
             </Form.Field>
-            <Button type="submit">Register</Button>
+            {isLoading ? (
+              <Button fluid loading>
+                Loading
+              </Button>
+            ) : (
+              <Button fluid type="submit">
+                Register
+              </Button>
+            )}
           </Form>
         </Segment>
         <Segment
